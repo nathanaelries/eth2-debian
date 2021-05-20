@@ -81,6 +81,24 @@ sudo add-apt-repository -y ppa:ethereum/ethereum
 sudo apt-get update
 sudo apt-get install ethereum
 ```
+On Debian, the process is essentially the same, it's just not as automatic. Start by creating a file at /etc/apt/sources.list.d/ethereum.list. 
+```
+sudo nano /etc/apt/sources.list.d/ethereum.list
+```
+
+In that file, place the following two lines.
+
+```
+deb http://ppa.launchpad.net/ethereum/ethereum/ubuntu bionic main 
+deb-src http://ppa.launchpad.net/ethereum/ethereum/ubuntu bionic main
+```
+Save and exit. Next, you'll have to import the GPG key for the PPA.
+$ sudo apt-key adv --keyserver keyserver.ubuntu.com  --recv-keys 2A518C819BE37D2C2031944D1C52189C923F6CA9
+After Apt's done importing the key, update your system, and install the Ethereum package.
+
+$ sudo apt update
+$ sudo apt install ethereum
+Confirm that ethereum is installed:
 
 ### Create User Account
 
