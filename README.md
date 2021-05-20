@@ -103,17 +103,7 @@ After Apt's done importing the key, update your system, and install the Ethereum
 $ sudo apt update
 $ sudo apt install ethereum
 ```
-Confirm that ethereum is installed:
-```
-$ sudo systemctl status geth
-```
 
-You can check the status of the sync with the following commands
-```
-sudo geth attach ipc://home/geth/.ethereum/geth.ipc
-eth.syncing
-exit
-```
 
 ### Create User Account
 
@@ -155,6 +145,18 @@ Start and enable the validator service.
 sudo systemctl daemon-reload
 sudo systemctl start geth
 sudo systemctl enable geth
+```
+
+Confirm that geth is running:
+```
+$ sudo systemctl status geth
+```
+
+You can check the status of the blockchain sync with the following commands
+```
+sudo geth attach ipc://home/geth/.ethereum/geth.ipc
+eth.syncing
+exit
 ```
 
 ## Prysm
