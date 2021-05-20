@@ -107,6 +107,14 @@ Confirm that ethereum is installed:
 ```
 $ sudo systemctl status geth
 ```
+
+You can check the status of the sync with the following commands
+```
+sudo geth attach ipc://home/geth/.ethereum/geth.ipc
+eth.syncing
+exit
+```
+
 ### Create User Account
 
 ```console
