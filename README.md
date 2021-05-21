@@ -1249,34 +1249,6 @@ geth: 30303/udp
 geth: 30303/tcp
 
 
-## Security
-### SSH
-
-The following changes can be made to increase the security of SSH, but are not required.
-
-```console
-sudo nano /etc/ssh/sshd_config
-```
-
-Add the following lines, but replacing <LOGIN> with your login. You are not logging in to ssh with root, right? If you are, you probably don't want to add the `AllowUsers` and `PermitRootLogin` lines below.
-
-```
-AllowUsers <LOGIN>
-PermitEmptyPasswords no
-PermitRootLogin no
-Protocol 2
-```
-
-**Optional:** I prefer to change the default SSH port to a non-standard port. Do not forget what you change this to. Find the following line, uncomment it line by removing the "#", and replace "22" with your preferred port.
-
-```
-#Port 22
-```
-
-```console
-sudo reboot
-```
-
 ### Firewall
 If your staking system is behind a router with a firewall, you may not want to add another level of firewall to your network security. This section may be skipped.
 
