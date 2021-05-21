@@ -722,11 +722,34 @@ The next step is to upload your deposit data file to the launchpad site. If you 
 
 Follow the instructions by dragging and dropping the deposit file into the launchpad site. Then continue to follow the instructions until your deposit transaction is successful.
 
+change permissions to the keys. take a backup first!!!
+```console
+sudo mkdir /home/ethereum/eth2deposit-cli/validator_keys/backup
+sudo cp /home/ethereum/eth2deposit-cli/validator_keys/*.* /home/ethereum/eth2deposit-cli/validator_keys/backup
+
+```
+After saving the keys, change the permissions and ownership
+
+```console
+ sudo chmod 777 /home/ethereum/eth2deposit-cli/validator_keys/keystore-*
+ sudo chown validator:validator /home/ethereum/eth2deposit-cli/validator_keys/keystore-*
+```
+
+Run the prysm.sh to import the keys
+
 ```console
 sudo -u validator /home/validator/bin/prysm.sh validator accounts import --keys-dir=$HOME/eth2deposit-cli/validator_keys
 ```
 
-Follow the prompts. The default wallet directory should be `/home/validator/.eth2validators/prysm-wallet-v2`. Use the same password used when you were prompted for a password while running `./deposit new-mnemonic --num_validators NUMBER_OF_VALIDATORS --chain mainnet`.
+Follow the prompts. The default wallet directory should be `/home/validator/.eth2validators/prysm-wallet-v2`. You will be prompted for a password. This password will be a new password for the validator prysm wallet stored in `/home/validator/.eth2validators/prysm-wallet-v2`. Write down this password and do not lose it!
+
+After creating the new wallet password, you will be asked to provide the password you used earlier when you ran the eth2deposit-cli scripts.
+./deposit new-mnemonic --num_validators NUMBER_OF_VALIDATORS --chain mainnet.
+
+If all goes well, you will see
+```
+Verified /home/validator/bin/dist/validator-v1.3.9-linux-amd64 has been signed by Prysmatic Labs. Starting Prysm validator accounts import --keys-dir=/home/bosticetudis/eth2deposit-cli/validator_keys [2021-05-21 16:17:42] WARN flags: Running on ETH2 Mainnet [2021-05-21 16:17:42] INFO prompt: (wallet path) /home/validator/.eth2validators/prysm-wallet-v2 Wallet password: Enter the password for your imported accounts: Importing accounts, this may take a while... Importing accounts... 100% [==========================================] [4s:0s] Successfully imported
+```
 
 Create a password file and make it readbable only to the validator account.
 
