@@ -53,6 +53,30 @@ Run the following command, replacing `<SELECTED_TIMEZONE>` with the time zone yo
 sudo timedatectl set-timezone <SELECTED_TIMEZONE>
 ```
 
+### Create a non-root user with sudo privileges
+
+Make a habit of logging to your server using a non-root account. This will prevent the accidental deletion of files if you make a mistake. For instance, the command rm can wipe your entire server if run incorrectly using by a root user.
+Tip: Do NOT routinely use the root account. Use su or sudo,  always.
+SSH to your server with your SSH client
+```console
+ssh username@server.public.ip.address
+# example
+# ssh myUsername@77.22.161.10
+```
+Create a new user called 'ethereum'
+
+```console
+sudo useradd -m -s /bin/bash ethereum
+```
+Set the password for ethereum user
+
+[Don't re-use passwords!](https://xkcd.com/792/)
+[Choose passwords easy for humans to remember, but hard for computers to crack](https://xkcd.com/936/)
+
+```console
+sudo passwd ethereum
+```
+
 ### net-tools
 Installing net-tools in order to determine network device via ifconfig.
 ```console
