@@ -306,6 +306,232 @@ Towards the end of the output, you’ll see where SSH uses your SSH key and then
 
 Congratulations, you’ve successfully added a second factor when logging in remotely to your server over SSH. If this is what you wanted — to use your SSH key and a TOTP token to enable MFA for SSH (for most people, this is the optimal configuration) — then you’re done.
 
+### Secure Shared Memory
+One of the first things you should do is secure the shared memory used on the system. If you're unaware, shared memory can be used in an attack against a running service. Because of this, secure that portion of system memory. 
+
+To learn more about secure shared memory, read this [techrepublic.com](https://www.techrepublic.com/article/how-to-enable-secure-shared-memory-on-ubuntu-server/) article.
+
+One exceptional case
+There may be a reason for you needing to have that memory space mounted in read/write mode (such as a specific server application like DappNode that requires such access to the shared memory or standard applications like Google Chrome). In this case, use the following line for the fstab file with instructions below.
+  
+Use with caution
+With some trial and error, you may discover some applications(like DappNode) do not work with shared memory in read-only mode. For the highest security and if compatible with your applications, it is a worthwhile endeavor to implement this secure shared memory setting.
+
+
+Edit /etc/fstab
+   ```console
+sudo nano /etc/fstab
+   ```
+Insert the following line to the bottom of the file and save/close. This sets shared memory into read-only mode.
+   ```
+tmpfs    /run/shm    tmpfs    ro,noexec,nosuid    0 0
+   ```
+Reboot the node in order for changes to take effect.
+   ```console
+sudo systemctl reboot
+   ```
+
+### Install Fail2ban
+
+Fail2ban is an intrusion-prevention system that monitors log files and searches for particular patterns that correspond to a failed login attempt. If a certain number of failed logins are detected from a specific IP address (within a specified amount of time), fail2ban blocks access from that IP address.
+
+   ```console
+sudo apt install -y fail2ban
+   ```
+Edit a config file that monitors SSH logins.
+   ```console
+sudo nano /etc/fail2ban/jail.local
+   ```
+Add the following lines to the bottom of the file.
+   ```
+# Example
+ignoreip = 192.168.1.0/24 127.0.0.1/8 
+[sshd]
+enabled = true
+port = <22 or your random port number>
+filter = sshd
+logpath = /var/log/auth.log
+maxretry = 3
+# whitelisted IP addresses
+ignoreip = <list of whitelisted IP address, your local daily laptop/pc>
+   ```
+Save/close file.
+
+Restart fail2ban for settings to take effect.
+   ```console
+sudo systemctl restart fail2ban
+   ```
+   
+### Configure your Firewall
+The standard UFW firewall can be used to control network access to your node.
+
+Install UFW
+```console
+sudo apt install -y ufw
+```
+With any new installation, ufw is disabled by default. Enable it with the following settings.
+
+Port 22 (or your random port #) TCP for SSH connection
+
+Ports for p2p traffic
+
+Lighthouse uses port 9000 tcp/udp
+
+Teku uses port 9000 tcp/udp
+
+Prysm uses port 13000 tcp and port 12000 udp
+
+Nimbus uses port 9000 tcp/udp
+
+Lodestar uses port 30607 tcp and port 9000 udp
+
+Port 30303 tcp/udp eth1 node
+
+Lighthouse
+Prysm
+Teku
+Nimbus
+Lodestar
+# By default, deny all incoming and outgoing traffic
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+# Allow ssh access
+sudo ufw allow ssh #<port 22 or your random ssh port number>/tcp
+# Allow p2p ports
+sudo ufw allow 13000/tcp
+sudo ufw allow 12000/udp
+# Allow eth1 port
+sudo ufw allow 30303/tcp
+sudo ufw allow 30303/udp
+# Enable firewall
+sudo ufw enable
+# Verify status
+sudo ufw status numbered
+Do not expose Grafana (port 3000) and Prometheus endpoint (port 9090) to the public internet as this invites a new attack surface! A secure solution would be to access Grafana through a ssh tunnel with Wireguard.
+
+Only open the following ports on local home staking setups behind a home router firewall or other network firewall.
+
+​
+🔥
+ It is dangerous to open these ports on a VPS/cloud node.
+
+# Allow grafana web server port
+sudo ufw allow 3000/tcp
+# Enable prometheus endpoint port
+sudo ufw allow 9090/tcp
+Confirm the settings are in effect.
+
+# Verify status
+sudo ufw status numbered
+     To                         Action      From
+     --                         ------      ----
+[ 1] 22/tcp                     ALLOW IN    Anywhere
+# SSH
+[ 2] 3000/tcp                   ALLOW IN    Anywhere
+# Grafana
+[ 3] 9000/tcp                   ALLOW IN    Anywhere
+# eth2 p2p traffic
+[ 4] 9090/tcp                   ALLOW IN    Anywhere
+# Prometheus
+[ 5] 30303/tcp                  ALLOW IN    Anywhere
+# eth1 node
+[ 6] 22/tcp (v6)                ALLOW IN    Anywhere (v6)
+# SSH
+[ 7] 3000/tcp (v6)              ALLOW IN    Anywhere (v6)
+# Grafana
+[ 8] 9000/tcp (v6)              ALLOW IN    Anywhere (v6)
+# eth2 p2p traffic
+[ 9] 9090/tcp (v6)              ALLOW IN    Anywhere (v6)
+# Prometheus
+[10] 30303/tcp (v6)             ALLOW IN    Anywhere (v6)
+# eth1 node
+[ Optional but recommended ] Whitelisting (or permitting connections from a specific IP) can be setup via the following command.
+
+sudo ufw allow from <your local daily laptop/pc>
+# Example
+# sudo ufw allow from 192.168.50.22
+ 
+🎊
+ Port Forwarding Tip: You'll need to forward and open ports to your validator. Verify it's working with https://www.yougetsignal.com/tools/open-ports/ or https://canyouseeme.org/ .
+
+​
+📞
+ Verify Listening Ports
+If you want to maintain a secure server, you should validate the listening network ports every once in a while. This will provide you essential information about your network.
+
+sudo ss -tulpn
+# Example output. Ensure the port numbers look right.
+# Netid  State    Recv-Q  Send-Q    Local Address:Port   Peer Address:Port   Process
+# tcp    LISTEN   0       128       127.0.0.1:5052       0.0.0.0:*           users:(("lighthouse",pid=12160,fd=22))
+# tcp    LISTEN   0       128       127.0.0.1:5054       0.0.0.0:*           users:(("lighthouse",pid=12160,fd=23))
+# tcp    LISTEN   0       1024      0.0.0.0:9000         0.0.0.0:*           users:(("lighthouse",pid=12160,fd=21))
+# udp    UNCONN   0       0         *:30303              *:*                 users:(("geth",pid=22117,fd=158))
+# tcp    LISTEN   0       4096      *:30303              *:*                 users:(("geth",pid=22117,fd=156))
+Alternatively you can use netstat
+
+sudo netstat -tulpn
+# Example output. Ensure the port numbers look right.
+# Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+# tcp        0      0 127.0.0.1:5052          0.0.0.0:*               LISTEN      12160/lighthouse
+# tcp        0      0 127.0.0.1:5054          0.0.0.0:*               LISTEN      12160/lighthouse
+# tcp        0      0 0.0.0.0:9000            0.0.0.0:*               LISTEN      12160/lighthouse
+# tcp6       0      0 :::30303                :::*                    LISTEN      22117/geth
+# udp6       0      0 :::30303                :::*                    LISTEN      22117/geth
+​
+👩🚀
+ Use system user accounts - Principle of Least Privilege [Advanced Users / Optional]
+Recommended for Advanced Users Only
+
+Principle of Least Privilege: Each eth2 process is assigned a system user account and runs under the least amount of privileges required in order to function. This best practice protects against a scenario where a vulnerability or exploit discovered in a specific process might enable access other system processes.
+
+# creates system user account for eth1 service
+sudo adduser --system --no-create-home eth1
+​
+# creates system user account for validator service
+sudo adduser --system --no-create-home validator
+​
+# creates system user account for beacon-chain service
+sudo adduser --system --no-create-home beacon-chain
+​
+# creates system user account for slasher
+sudo adduser --system --no-create-home slasher
+​
+🔥
+ Caveats For Advanced Users
+
+If you decide to use system user accounts, remember to replace the systemd unit files with the corresponding users. 
+
+# Example of beacon-chain.service unit file
+User            = beacon-chain
+Furthermore, ensure the correct file ownership is assigned to your system user account where applicable.
+
+# Example of prysm validator's password file
+sudo chown validator:validator -R $HOME/.eth2validators/validators-password.txt
+​
+✨
+ Additional validator node best practices
+​
+
+​
+
+Networking
+
+​
+
+Assign static internal IPs to both your validator node and daily laptop/PC. This is useful in conjunction with ufw and Fail2ban's whitelisting feature. Typically, this can be configured in your router's settings. Consult your router's manual for instructions.
+
+Power Outage
+
+In case of power outage, you want your validator machine to restart as soon as power is available. In the BIOS settings, change the Restore on AC / Power Loss or After Power Loss setting to always on. Better yet, install an Uninterruptable Power Supply (UPS).
+
+Clear the bash history
+
+When pressing the up-arrow key, you can see prior commands which may contain sensitive data. To clear this, run the following:
+
+shred -u ~/.bash_history && touch ~/.bash_history
+
+Be sure to review the Checklist | How to confirm a healthy functional ETH2 validator.
+
 ### net-tools
 Installing net-tools in order to determine network device via ifconfig.
 ```console
