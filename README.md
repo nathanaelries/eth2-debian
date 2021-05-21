@@ -63,7 +63,7 @@ ssh username@server.public.ip.address
 # example
 # ssh myUsername@77.22.161.10
 ```
-Create a new user called 'ethereum'
+### Create a new user called 'ethereum'
 
 ```console
 sudo useradd -m -s /bin/bash ethereum
@@ -78,6 +78,85 @@ Set the password for ethereum user
 ```console
 sudo passwd ethereum
 ```
+
+Add ethereum to the sudo group
+```console
+sudo usermod -aG sudo ethereum
+```
+### Disable SSH password Authentication and Use SSH Keys only
+
+> The basic rules of hardening SSH are:
+ - No password for SSH access (use private key)
+ - Don't allow root to SSH (the appropriate users should SSH in, then su or sudo)
+ - Use sudo for users so commands are logged
+ - Log unauthorized login attempts (and consider software to block/ban users who try to access your server too many times, like fail2ban)
+ - Lock down SSH to only the ip range your require (if you feel like it)
+
+
+Create a new SSH key pair on your local machine. Run this on your local machine (NOT the server!). You will be asked to type a file name in which to save the key. This will be your keyname.
+
+Your choice of ED25519 or RSA public key algorithm.
+```console
+ssh-keygen -t ed25519
+```
+
+Transfer the public key to your remote node. Update keyname.pub appropriately.
+```console
+ssh-copy-id -i $HOME/.ssh/keyname.pub ethereum@server.public.ip.address
+```
+Login with your new ethereum user
+```console
+ssh ethereum@server.public.ip.address
+```
+Disable root login and password based login. Edit the /etc/ssh/sshd_config file
+```console
+sudo nano /etc/ssh/sshd_config
+```
+Locate ChallengeResponseAuthentication and update to no
+```
+ChallengeResponseAuthentication no
+```
+Locate PasswordAuthentication update to no
+```
+PasswordAuthentication no
+```
+Locate PermitRootLogin and update to no
+```
+PermitRootLogin no
+```
+Locate PermitEmptyPasswords and update to no
+```
+PermitEmptyPasswords no
+```
+Optional: Locate Port and customize it your random port.
+Despite what you may have heard, changing the port doesn't provide any serious defense against a targetted attack. If your server is being targetted then they will port scan you and find out where your doors are.
+
+However, moving SSH off the default port of 22 will deter some of the non-targetted and amateur script kiddie type attacks. These are relatively unsophisticated users who are using scripts to port scan large blocks of IP addresses at a time specifically to see if port 22 is open and when they find one, they will launch some sort of attack on it (brute force, dictionary attack, etc). If your machine is in that block of IPs being scanned and it is not running SSH on port 22 then it will not respond and therefore will not show up in the list of machines for this script kiddie to attack. Ergo, there is some low-level "security through obscurity" provided but only for this type of opportunistic attack.
+
+By way of example, if you have the time - log dive on your server (assuming SSH is on port 22) and pull out all the unique failed SSH attempts that you can. Then move SSH off that port, wait some time, and go log diving again. You will undoubtedly find less attacks.
+
+I use Fail2Ban on my server anyway, so these types of script-kiddie attacks are really, really obvious, but easy enough to protect against.
+
+Use a random port # from 1024 thru 49141. Check for possible conflicts. 
+Port <port number>
+Validate the syntax of your new SSH configuration.
+sudo sshd -t
+If no errors with the syntax validation, reload the SSH process
+sudo service sshd reload
+Verify the login still works
+ssh ethereum@server.public.ip.address
+ssh ethereum@server.public.ip.address -p <custom port number>
+Alternatively, you might need to add the -p <port#> flag if you used a custom SSH port.
+ssh -i <path to your SSH_key_name.pub> ethereum@server.public.ip.address
+Optional: Make logging in easier by updating your local ssh config.
+To simplify the ssh command needed to log in to your server, consider updating your local $HOME/.ssh/config file:
+Host ethereum-server
+  User ethereum
+  HostName <server.public.ip.address>
+  Port <custom port number>
+This will allow you to log in with ssh ethereum-server rather than needing to pass through all ssh parameters explicitly.
+ Update your system
+It's critically important to keep your system up-to-date with the latest patches to prevent intruders from accessing your system.
 
 ### net-tools
 Installing net-tools in order to determine network device via ifconfig.
