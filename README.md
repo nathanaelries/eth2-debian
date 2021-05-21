@@ -751,6 +751,13 @@ If all goes well, you will see
 Verified /home/validator/bin/dist/validator-v1.3.9-linux-amd64 has been signed by Prysmatic Labs. Starting Prysm validator accounts import --keys-dir=/home/bosticetudis/eth2deposit-cli/validator_keys [2021-05-21 16:17:42] WARN flags: Running on ETH2 Mainnet [2021-05-21 16:17:42] INFO prompt: (wallet path) /home/validator/.eth2validators/prysm-wallet-v2 Wallet password: Enter the password for your imported accounts: Importing accounts, this may take a while... Importing accounts... 100% [==========================================] [4s:0s] Successfully imported
 ```
 
+### Impurtant! Change the file permissions back!
+
+```console
+sudo chown ethereum:etherem /home/ethereum/eth2deposit-cli/validator_keys/keystore-*
+ sudo chmod 400 /home/ethereum/eth2deposit-cli/validator_keys/keystore-*
+```
+
 Create a password file and make it readbable only to the validator account.
 
 ```console
