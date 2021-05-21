@@ -149,21 +149,162 @@ sudo service sshd reload
 Verify the login still works
 ```console
 ssh -i <path to your SSH_key_name.pub> ethereum@server.public.ip.address
+```
 
-
-# Alternatively, you might need to add the -p <port#> flag if you used a custom SSH port.
+Alternatively, you might need to add the -p <port#> flag if you used a custom SSH port.
+```console
 ssh -i <path to your SSH_key_name.pub> ethereum@server.public.ip.address -p <custom port number>
 ```
 
-Optional: Make logging in easier by updating your local ssh config.
-To simplify the ssh command needed to log in to your server, consider updating your local $HOME/.ssh/config file:
-Host ethereum-server
-  User ethereum
-  HostName <server.public.ip.address>
-  Port <custom port number>
-This will allow you to log in with ssh ethereum-server rather than needing to pass through all ssh parameters explicitly.
- Update your system
 It's critically important to keep your system up-to-date with the latest patches to prevent intruders from accessing your system.
+
+### Disable root account
+System admins should not frequently log in as root in order to maintain server security. Instead, you can use sudo execute that require low-level privileges.
+
+ To disable the root account, simply use the -l option. 
+
+ ```console
+sudo passwd -l root
+```
+ 
+# If for some valid reason you need to re-enable the account, simply use the -u option.
+ ```console
+sudo passwd -u root
+```
+# Setup Two Factor Authentication for SSH
+SSH, the secure shell, is often used to access remote Linux systems. Because we often use it to connect with computers containing important data, it’s recommended to add another security layer. Here comes the two factor authentication (2FA).
+ ```console
+sudo apt install libpam-google-authenticator -y
+ ```
+To make SSH use the Google Authenticator PAM module, edit the /etc/pam.d/sshd file:
+ ```console
+sudo nano /etc/pam.d/sshd
+ ```
+Add the following line:
+ ```
+auth required pam_google_authenticator.so
+ ```
+ save and close
+ 
+Now you need to restart the sshd daemon using:
+ ```console
+sudo systemctl restart sshd.service
+ ```
+Modify /etc/ssh/sshd_config
+ ```console
+sudo nano /etc/ssh/sshd_config
+ ```
+Locate ChallengeResponseAuthentication and update to yes
+ ```
+ChallengeResponseAuthentication yes
+ ```
+Locate UsePAM and update to yes
+ ```
+UsePAM yes
+ ```
+Save the file and exit.
+
+Run the google-authenticator command.
+ ```console
+google-authenticator
+ ```
+It will ask you a series of questions, here is a recommended configuration:
+- Make tokens “time-base”": yes
+- Update the .google_authenticator file: yes
+- Disallow multiple uses: yes
+- Increase the original generation time limit: no
+- Enable rate-limiting: yes
+- 
+You may have noticed the giant QR code that appeared during the process, underneath are your emergency scratch codes to be used if you don’t have access to your phone: write them down on paper and keep them in a safe place.
+
+Now, open Google Authenticator on your phone and add your secret key to make two factor authentication work.
+
+Because we’ll be making SSH changes over SSH, it’s important never to close your initial SSH connection. Instead, open a second SSH session to do testing. This is to avoid locking yourself out of your server if there was a mistake in your SSH configuration. Once everything works, then you can safely close any sessions. Another safety precaution is to create a backup of the system files you will be editing, so if something goes wrong, you can\srevert to the original file and start over again with a clean configuration.
+
+To begin, make a backup of the sshd configuration file:
+ ```console
+sudo cp /etc/pam.d/sshd /etc/pam.d/sshd.bak
+  ```
+Now open the file using nano or your favorite text editor:
+ ```console
+sudo nano /etc/pam.d/sshd
+  ```
+Add the following line to the bottom of the file:
+ ```
+@include common-password
+auth required pam_google_authenticator.so 
+ ```
+ 
+Save and close the file.
+
+### Configure SSH to support this kind of authentication.
+
+First make a backup of the file:
+ ```console
+sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+ ```
+ 
+Now open the SSH configuration file for editing:
+ ```console
+sudo nano /etc/ssh/sshd_config
+  ```
+Look for ChallengeResponseAuthentication and set its value to yes:
+
+ ```
+ChallengeResponseAuthentication yes
+ ```
+  
+Save and close the file, then restart SSH to reload the configuration files. Restarting the sshd service won’t close our current open connections, meaning you won’t risk locking yourself out with this command:
+ ```console
+sudo systemctl restart sshd.service
+  ```
+To test that everything’s working so far, open ANOTHER terminal and try logging in over SSH. It is very important that you keep your current SSH session open and test with an additional session, or you will lock yourself out at some point and will need to use the web console to get yourself back in.
+
+Note: If you’ve previously created an SSH key and are using it, you’ll notice you didn’t have to type in your user’s password or the MFA verification code. This is because an SSH key overrides all other authentication options by default. Otherwise, you should have gotten a password and verification code prompt.
+
+Next, to enable an SSH key as one factor and the verification code as a second, we need to tell SSH which factors to use and prevent the SSH key from overriding all other types.
+
+### Making SSH Aware of MFA
+MFA is still not working if you are using and SSH key. To make SSH aware of MFA, reopen the sshd configuration file:
+  ```console
+sudo nano /etc/ssh/sshd_config
+   ```
+Add the following line at the bottom of the file. This tells SSH which authentication methods are required. We tell SSH that users need an SSH key and either a password or a verification code (or all three):
+
+  ```
+AuthenticationMethods publickey,password publickey,keyboard-interactive
+   ```
+Save and close the file.
+
+Next, open the PAM sshd configuration file again:
+  ```console
+sudo nano /etc/pam.d/sshd
+   ```
+Find the line @include common-auth and comment it out by adding a # character as the first character on the line. This tells PAM not to prompt for a password:
+  ```
+#@include common-auth
+  ```
+Save and close the file, then restart SSH:
+  ```console
+sudo systemctl restart sshd.service
+   ```
+Now try logging into the server again with a different terminal session/window. Unlike last time, SSH should ask for your verification code. Enter it, and you will complete the login. Even though there is no indication that your SSH key was used, your login attempt used two factors. If you want to verify this, you can add -v (for verbose) after the SSH command.
+
+The -v switch will produce an output like this:
+
+Example SSH output\
+. . .
+debug1: Authentications that can continue: publickey
+debug1: Next authentication method: publickey
+debug1: Offering RSA public key: /Users/sammy/.ssh/id_rsa
+debug1: Server accepts key: pkalg rsa-sha2-512 blen 279
+Authenticated with partial success.
+debug1: Authentications that can continue: password,keyboard-interactive
+debug1: Next authentication method: keyboard-interactive
+Verification code:
+Towards the end of the output, you’ll see where SSH uses your SSH key and then asks for the verification code. You can now log in over SSH with an SSH key and a one-time password. If you want to enforce all three authentication types, you can follow the next step.
+
+Congratulations, you’ve successfully added a second factor when logging in remotely to your server over SSH. If this is what you wanted — to use your SSH key and a TOTP token to enable MFA for SSH (for most people, this is the optimal configuration) — then you’re done.
 
 ### net-tools
 Installing net-tools in order to determine network device via ifconfig.
