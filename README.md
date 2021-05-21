@@ -85,7 +85,7 @@ sudo usermod -aG sudo ethereum
 ```
 ### Disable SSH password Authentication and Use SSH Keys only
 
-> The basic rules of hardening SSH are:
+The basic rules of hardening SSH are:
  - No password for SSH access (use private key)
  - Don't allow root to SSH (the appropriate users should SSH in, then su or sudo)
  - Use sudo for users so commands are logged
@@ -214,7 +214,7 @@ It will ask you a series of questions, here is a recommended configuration:
 - Disallow multiple uses: yes
 - Increase the original generation time limit: no
 - Enable rate-limiting: yes
-- 
+
 You may have noticed the giant QR code that appeared during the process, underneath are your emergency scratch codes to be used if you don’t have access to your phone: write them down on paper and keep them in a safe place.
 
 Now, open Google Authenticator on your phone and add your secret key to make two factor authentication work.
@@ -293,15 +293,15 @@ Now try logging into the server again with a different terminal session/window. 
 The -v switch will produce an output like this:
 
 Example SSH output\
-. . .
-debug1: Authentications that can continue: publickey
-debug1: Next authentication method: publickey
-debug1: Offering RSA public key: /Users/sammy/.ssh/id_rsa
-debug1: Server accepts key: pkalg rsa-sha2-512 blen 279
-Authenticated with partial success.
-debug1: Authentications that can continue: password,keyboard-interactive
-debug1: Next authentication method: keyboard-interactive
-Verification code:
+>. . . debug1: Authentications that can continue: publickey
+>debug1: Next authentication method: publickey
+>debug1: Offering RSA public key: /Users/sammy/.ssh/id_rsa
+>debug1: Server accepts key: pkalg rsa-sha2-512 blen 279
+>Authenticated with partial success.
+>debug1: Authentications that can continue: password,keyboard-interactive
+>debug1: Next authentication method: keyboard-interactive
+>Verification code:
+
 Towards the end of the output, you’ll see where SSH uses your SSH key and then asks for the verification code. You can now log in over SSH with an SSH key and a one-time password. If you want to enforce all three authentication types, you can follow the next step.
 
 Congratulations, you’ve successfully added a second factor when logging in remotely to your server over SSH. If this is what you wanted — to use your SSH key and a TOTP token to enable MFA for SSH (for most people, this is the optimal configuration) — then you’re done.
@@ -311,10 +311,10 @@ One of the first things you should do is secure the shared memory used on the sy
 
 To learn more about secure shared memory, read this [techrepublic.com](https://www.techrepublic.com/article/how-to-enable-secure-shared-memory-on-ubuntu-server/) article.
 
-One exceptional case
+### One exceptional case
 There may be a reason for you needing to have that memory space mounted in read/write mode (such as a specific server application like DappNode that requires such access to the shared memory or standard applications like Google Chrome). In this case, use the following line for the fstab file with instructions below.
   
-Use with caution
+### Use with caution
 With some trial and error, you may discover some applications(like DappNode) do not work with shared memory in read-only mode. For the highest security and if compatible with your applications, it is a worthwhile endeavor to implement this secure shared memory setting.
 
 
@@ -369,6 +369,7 @@ Install UFW
 ```console
 sudo apt install -y ufw
 ```
+
 With any new installation, ufw is disabled by default. Enable it with the following settings.
 
 Port 22 (or your random port #) TCP for SSH connection
@@ -387,42 +388,55 @@ Lodestar uses port 30607 tcp and port 9000 udp
 
 Port 30303 tcp/udp eth1 node
 
-Lighthouse
-Prysm
-Teku
-Nimbus
-Lodestar
-# By default, deny all incoming and outgoing traffic
+
+By default, deny all incoming and outgoing traffic
+```console
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
-# Allow ssh access
+```
+Allow ssh access
+```console
 sudo ufw allow ssh #<port 22 or your random ssh port number>/tcp
-# Allow p2p ports
+```
+Allow p2p ports
+```console
 sudo ufw allow 13000/tcp
 sudo ufw allow 12000/udp
-# Allow eth1 port
+```
+Allow eth1 port
+```console
 sudo ufw allow 30303/tcp
 sudo ufw allow 30303/udp
-# Enable firewall
+```
+Enable firewall
+```console
 sudo ufw enable
-# Verify status
+```
+Verify status
+```console
 sudo ufw status numbered
+```
+
 Do not expose Grafana (port 3000) and Prometheus endpoint (port 9090) to the public internet as this invites a new attack surface! A secure solution would be to access Grafana through a ssh tunnel with Wireguard.
 
 Only open the following ports on local home staking setups behind a home router firewall or other network firewall.
+It is dangerous to open these ports on a VPS/cloud node.
 
-​
-🔥
- It is dangerous to open these ports on a VPS/cloud node.
-
-# Allow grafana web server port
+Allow grafana web server port
+```console
 sudo ufw allow 3000/tcp
-# Enable prometheus endpoint port
+```
+Enable prometheus endpoint port
+```console
 sudo ufw allow 9090/tcp
+```
 Confirm the settings are in effect.
 
-# Verify status
+Verify status
+```console
 sudo ufw status numbered
+```
+
      To                         Action      From
      --                         ------      ----
 [ 1] 22/tcp                     ALLOW IN    Anywhere
@@ -445,92 +459,38 @@ sudo ufw status numbered
 # Prometheus
 [10] 30303/tcp (v6)             ALLOW IN    Anywhere (v6)
 # eth1 node
-[ Optional but recommended ] Whitelisting (or permitting connections from a specific IP) can be setup via the following command.
+
 
 sudo ufw allow from <your local daily laptop/pc>
-# Example
-# sudo ufw allow from 192.168.50.22
+Example
+```console
+sudo ufw allow from 192.168.50.22
+```
  
-🎊
  Port Forwarding Tip: You'll need to forward and open ports to your validator. Verify it's working with https://www.yougetsignal.com/tools/open-ports/ or https://canyouseeme.org/ .
 
-​
-📞
- Verify Listening Ports
+
+Verify Listening Ports
 If you want to maintain a secure server, you should validate the listening network ports every once in a while. This will provide you essential information about your network.
-
+```console
 sudo ss -tulpn
-# Example output. Ensure the port numbers look right.
-# Netid  State    Recv-Q  Send-Q    Local Address:Port   Peer Address:Port   Process
-# tcp    LISTEN   0       128       127.0.0.1:5052       0.0.0.0:*           users:(("lighthouse",pid=12160,fd=22))
-# tcp    LISTEN   0       128       127.0.0.1:5054       0.0.0.0:*           users:(("lighthouse",pid=12160,fd=23))
-# tcp    LISTEN   0       1024      0.0.0.0:9000         0.0.0.0:*           users:(("lighthouse",pid=12160,fd=21))
-# udp    UNCONN   0       0         *:30303              *:*                 users:(("geth",pid=22117,fd=158))
-# tcp    LISTEN   0       4096      *:30303              *:*                 users:(("geth",pid=22117,fd=156))
-Alternatively you can use netstat
-
+```
+```console
 sudo netstat -tulpn
-# Example output. Ensure the port numbers look right.
-# Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
-# tcp        0      0 127.0.0.1:5052          0.0.0.0:*               LISTEN      12160/lighthouse
-# tcp        0      0 127.0.0.1:5054          0.0.0.0:*               LISTEN      12160/lighthouse
-# tcp        0      0 0.0.0.0:9000            0.0.0.0:*               LISTEN      12160/lighthouse
-# tcp6       0      0 :::30303                :::*                    LISTEN      22117/geth
-# udp6       0      0 :::30303                :::*                    LISTEN      22117/geth
-​
-👩🚀
- Use system user accounts - Principle of Least Privilege [Advanced Users / Optional]
-Recommended for Advanced Users Only
-
-Principle of Least Privilege: Each eth2 process is assigned a system user account and runs under the least amount of privileges required in order to function. This best practice protects against a scenario where a vulnerability or exploit discovered in a specific process might enable access other system processes.
-
-# creates system user account for eth1 service
-sudo adduser --system --no-create-home eth1
-​
-# creates system user account for validator service
-sudo adduser --system --no-create-home validator
-​
-# creates system user account for beacon-chain service
-sudo adduser --system --no-create-home beacon-chain
-​
-# creates system user account for slasher
-sudo adduser --system --no-create-home slasher
-​
-🔥
- Caveats For Advanced Users
-
-If you decide to use system user accounts, remember to replace the systemd unit files with the corresponding users. 
-
-# Example of beacon-chain.service unit file
-User            = beacon-chain
-Furthermore, ensure the correct file ownership is assigned to your system user account where applicable.
-
-# Example of prysm validator's password file
-sudo chown validator:validator -R $HOME/.eth2validators/validators-password.txt
-​
-✨
- Additional validator node best practices
-​
-
-​
-
-Networking
-
-​
-
+```
 Assign static internal IPs to both your validator node and daily laptop/PC. This is useful in conjunction with ufw and Fail2ban's whitelisting feature. Typically, this can be configured in your router's settings. Consult your router's manual for instructions.
 
-Power Outage
+### Power Outage
 
 In case of power outage, you want your validator machine to restart as soon as power is available. In the BIOS settings, change the Restore on AC / Power Loss or After Power Loss setting to always on. Better yet, install an Uninterruptable Power Supply (UPS).
 
-Clear the bash history
+### Clear the bash history
 
 When pressing the up-arrow key, you can see prior commands which may contain sensitive data. To clear this, run the following:
-
+```console
 shred -u ~/.bash_history && touch ~/.bash_history
+```
 
-Be sure to review the Checklist | How to confirm a healthy functional ETH2 validator.
 
 ### net-tools
 Installing net-tools in order to determine network device via ifconfig.
@@ -977,12 +937,12 @@ sudo systemctl enable prometheus.service
 ### Grafana
 ```console
 cd
-sudo apt-get install -y apt-transport-https
-sudo apt-get install -y software-properties-common wget
+sudo apt install -y apt-transport-https
+sudo apt install -y software-properties-common wget
 wget -q -O - https://packages.grafana.com/gpg.key | sudo apt-key add -
 sudo add-apt-repository "deb https://packages.grafana.com/oss/deb stable main"
-sudo apt-get update
-sudo apt-get install grafana-enterprise
+sudo apt update
+sudo apt install -y grafana-enterprise
 ```
 
 #### Setup systemd
@@ -1114,7 +1074,7 @@ sudo systemctl enable node_exporter.service
 Install go, if you haven't already.
 
 ```console
-sudo apt-get install golang-1.14-go
+sudo apt install -y golang-1.14-go
 
 # Create a symlink from /usr/bin/go to the new go installation
 sudo ln -s /usr/lib/go-1.14/bin/go /usr/bin/go
@@ -1203,7 +1163,7 @@ From [this](https://www.digitalocean.com/community/tutorials/how-to-set-up-time-
 > constantly and gradually keep the system time on track.
 
 ```console
-sudo apt-get install ntp
+sudo apt install -y ntp
 ```
 Update the NTP pool time server configuration to those that are geographically close to you. See [http://support.ntp.org/bin/view/Servers/NTPPoolServers](http://support.ntp.org/bin/view/Servers/NTPPoolServers) to find servers near you.
 
