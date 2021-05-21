@@ -433,30 +433,6 @@ Verify status
 sudo ufw status numbered
 ```
 
->     To                         Action      From
->    --                         ------      ----
->[ 1] 22/tcp                     ALLOW IN    Anywhere
-># SSH
->[ 2] 3000/tcp                   ALLOW IN    Anywhere
-># Grafana
->[ 3] 9000/tcp                   ALLOW IN    Anywhere
-># eth2 p2p traffic
->[ 4] 9090/tcp                   ALLOW IN    Anywhere
-># Prometheus
->[ 5] 30303/tcp                  ALLOW IN    Anywhere
-># eth1 node
->[ 6] 22/tcp (v6)                ALLOW IN    Anywhere (v6)
-># SSH
->[ 7] 3000/tcp (v6)              ALLOW IN    Anywhere (v6)
-># Grafana
->[ 8] 9000/tcp (v6)              ALLOW IN    Anywhere (v6)
-># eth2 p2p traffic
->[ 9] 9090/tcp (v6)              ALLOW IN    Anywhere (v6)
-># Prometheus
->[10] 30303/tcp (v6)             ALLOW IN    Anywhere (v6)
-># eth1 node
-
-
 sudo ufw allow from <your local daily laptop/pc>
 Example
 ```console
