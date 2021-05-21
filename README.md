@@ -71,6 +71,8 @@ sudo useradd -m -s /bin/bash ethereum
 Set the password for ethereum user
 
 [Don't re-use passwords!](https://xkcd.com/792/)
+
+
 [Choose passwords easy for humans to remember, but hard for computers to crack](https://xkcd.com/936/)
 
 ```console
