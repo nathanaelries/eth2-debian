@@ -1144,11 +1144,18 @@ sudo nano /etc/ntp.conf
 ```
 Look for lines that begin with `server` and replace the current values with the values you identified from ntp.org.
 
-Restart ntp. This will automatically shut down systemd-timesyncd, the default Ubuntu time syncing solution.
+Restart ntp. This will automatically shut down systemd-timesyncd, the default debian time syncing solution.
 
 ```console
 sudo systemctl restart ntp
 ```
+
+enable ntp. 
+
+```console
+sudo systemctl enable ntp
+```
+
 
 ### blackbox_exporter
 I have used blackbox_exporter to provide [ping](https://en.wikipedia.org/wiki/Ping_(networking_utility)) time data between my staking system and two DNS providers. Data is sent to Prometheus and on to Grafana. I have not found a practical use for this yet, though I have seen some interesting short-term shifts in ping times to Google. Therefore, blackbox_exporter is optional. 
