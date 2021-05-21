@@ -167,10 +167,11 @@ System admins should not frequently log in as root in order to maintain server s
 sudo passwd -l root
 ```
  
-# If for some valid reason you need to re-enable the account, simply use the -u option.
- ```console
-sudo passwd -u root
+If for some valid reason you need to re-enable the account, simply use the -u option.
 ```
+# sudo passwd -u root
+```
+
 # Setup Two Factor Authentication for SSH
 SSH, the secure shell, is often used to access remote Linux systems. Because we often use it to connect with computers containing important data, it’s recommended to add another security layer. Here comes the two factor authentication (2FA).
  ```console
