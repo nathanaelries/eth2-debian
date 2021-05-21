@@ -1,9 +1,9 @@
 
-# Setup an Eth2 Mainnet Validator System on Ubuntu
+# Setup an Eth2 Mainnet Validator System on Debian
 
 This document contains instructions for setting up an Eth2 mainnet staking system. Medalla testnet instructions are available [here](prysm-medalla.md).
 
-These instructions have been developed to configure an Eth2 mainnet staking system using Ubuntu 20.04 LTS on an Intel NUC 10i5FNK with 2TB SSD and 32GB RAM. These instructions are primarily for my own purposes, so that I can recreate my environment if I need to. They are not intended to represent best practices and may not be applicable to your hardware, software, or network configuration. There are many other good sources for instructions on setting up these services, and those may be more generally written and applicable.
+These instructions have been developed to configure an Eth2 mainnet staking system using Debian 10.9 "buster" LTS on an HP Proliant ML350 G9 with eight 1 TB SSD in RAID 10 and 64GB RAM. These instructions are primarily for my own purposes, so that I can recreate my environment if I need to. They are not intended to represent best practices and may not be applicable to your hardware, software, or network configuration. There are many other good sources for instructions on setting up these services, and those may be more generally written and applicable.
 
 Setup includes installation and configuration of the following services, including setting up systemd to automatically run services, where applicable:
 
@@ -18,29 +18,28 @@ Setup includes installation and configuration of the following services, includi
 
 Steps to install and configure all software have been copied from or inspired by a number of sources, which are cited at the end of this file. Discord discussions may have provided additional details or ideas. In addition, though I have never been a professional Linux administrator, I have many years experience running Linux servers for a variety of public and private hobby projects, which may have informed some of my decisions, for better or worse.
 
-This process assumes starting from first login on a clean Ubuntu 20.04 LTS installation, and were last tested on August 1, 2020.
+This process assumes starting from first login on a clean Debian 10.9 "buster" installation, and were last tested on May 21, 2021.
 
 ## Prerequisities
 
 ### BIOS Update
-If you have not updated the BIOS on your system, find and follow the manufacturer instructions for updating the BIOS. An updated BIOS may improve system performance or repair issues with your system. Instructions will vary dependent on the hardware you are using, but the following links should direct Intel NUC users to appropriate instructions.
+If you have not updated the BIOS on your system, find and follow the manufacturer instructions for updating the BIOS. An updated BIOS may improve system performance or repair issues with your system. Instructions will vary dependent on the hardware you are using, but the following links should direct HP Proliant ML350 G9 users to appropriate instructions.
 
-- [2018 and earlier NUC BIOS Update Instructions](https://www.intel.com/content/www/us/en/support/articles/000005636/intel-nuc.html)
-- [2019 and later NUC BIOS Update Instructions](https://www.intel.com/content/www/us/en/support/articles/000033291/intel-nuc.html)
+https://support.hpe.com/hpesc/public/km/product/1009483731/Product#t=DriversandSoftware&sort=relevancy&layout=table&numberOfResults=25
 
 ### Configure Behavior After Power Failure
-After a power failure, you may want your staking system to automatically restart and resume staking. Unfortunately, this is not the default behavior of many systems. Please check your system documentation to determine how to change this behavior in the system BIOS. For an Intel NUC, please check the following instructions.
+After a power failure, you may want your staking system to automatically restart and resume staking. Unfortunately, this is not the default behavior of many systems. Please check your system documentation to determine how to change this behavior in the system UEFI. For an HP Proliant ML350 G9, please check the following instructions.
 
-- [Can Intel NUC Mini PCs turn on automatically as soon as a power source is connected?](https://www.intel.com/content/www/us/en/support/articles/000054773/intel-nuc.html)
+- [HP Proliant M350 G9 User Manual](https://support.hpe.com/hpesc/public/docDisplay?docLocale=en_US&docId=emr_na-c04431235)
 
 ### Software Update
 After an initial install, it is a good idea to update everything to the latest versions.
 ```console
-sudo apt-get update
-sudo apt-get upgrade
-sudo apt-get dist-upgrade
-sudo apt-get autoremove
-sudo reboot
+sudo apt update
+sudo apt upgrade
+sudo apt dist-upgrade
+sudo apt autoremove
+sudo systemctl reboot
 ```
 
 ### Set Time Zone
@@ -57,18 +56,18 @@ sudo timedatectl set-timezone <SELECTED_TIMEZONE>
 ### net-tools
 Installing net-tools in order to determine network device via ifconfig.
 ```console
-sudo apt-get install net-tools
+sudo apt install -y net-tools
 ```
 
 ### make
 ```console
-sudo apt-get install make
+sudo apt install -y make
 ```
 
 ### curl
-Ubuntu Desktop users may need to install curl to continue.
+Debian 10.9 "buster" users need to install curl to continue.
 ```console
-sudo apt-get install curl
+sudo apt install -y curl
 ```
 
 ## geth
@@ -76,12 +75,7 @@ A geth full node is required to provide access to deposits made to the deposit c
 
 ### Install geth
 
-```console
-sudo add-apt-repository -y ppa:ethereum/ethereum
-sudo apt-get update
-sudo apt-get install ethereum
-```
-On Debian, the process is essentially the same, it's just not as automatic. Start by creating a file at /etc/apt/sources.list.d/ethereum.list. 
+On Debian, the process is essentially the same as Ubuntu, it's just not as automatic. As of the writing of this documentation, the ubuntu repository hosting the ethereum software is compatible with Debian 10.9 "buster". Start by creating a file at /etc/apt/sources.list.d/ethereum.list. 
 ```
 sudo nano /etc/apt/sources.list.d/ethereum.list
 ```
@@ -101,7 +95,7 @@ $ sudo apt-key adv --keyserver keyserver.ubuntu.com  --recv-keys 2A518C819BE37D2
 After Apt's done importing the key, update your system, and install the Ethereum package.
 ```
 $ sudo apt update
-$ sudo apt install ethereum
+$ sudo apt install -y ethereum
 ```
 
 Confirm that ethereum is installed:
@@ -313,7 +307,7 @@ Change the `NUMBER_OF_VALIDATORS` to the number of validators you want to create
 
 **BACKUP YOUR MNEMONIC AND PASSWORD!**
 
-The next step is to upload your deposit data file to the launchpad site. If you are using Ubuntu Server, you can either open up the deposit data file and copy it to a file on your desktop computer with the same name, or you can use scp or an equivalent tool to copy the deposit data to your desktop computer.
+The next step is to upload your deposit data file to the launchpad site. If you are using Debian 10.9 "buster", you can either open up the deposit data file and copy it to a file on your desktop computer with the same name, or you can use scp or an equivalent tool to copy the deposit data to your desktop computer.
 
 Follow the instructions by dragging and dropping the deposit file into the launchpad site. Then continue to follow the instructions until your deposit transaction is successful.
 
