@@ -501,17 +501,17 @@ Save and exit.
 
 Next, you'll have to import the GPG key for the PPA.
 ```
-$ sudo apt-key adv --keyserver keyserver.ubuntu.com  --recv-keys 2A518C819BE37D2C2031944D1C52189C923F6CA9
+sudo apt-key adv --keyserver keyserver.ubuntu.com  --recv-keys 2A518C819BE37D2C2031944D1C52189C923F6CA9
 ```
 After Apt's done importing the key, update your system, and install the Ethereum package.
 ```
-$ sudo apt update
-$ sudo apt install -y ethereum
+sudo apt update
+sudo apt install -y ethereum
 ```
 
 Confirm that ethereum is installed:
 ```
-$ dpkg -l | grep ethereum
+dpkg -l | grep ethereum
 ii  ethereum     1.9.25+build24398+bionic     amd64   Meta-package to install geth and other tools
 ```
 
@@ -559,7 +559,7 @@ sudo systemctl enable geth
 
 Confirm that geth is running:
 ```
-$ sudo systemctl status geth
+sudo systemctl status geth
 ```
 
 You can check the status of the blockchain sync with the following commands
@@ -1127,7 +1127,7 @@ sudo systemctl enable json_exporter.service
 ### Install ntpd
 For now, I prefer to use ntpd over the default systemd-timesyncd for syncing my system clock to an official time source.
 
-From [this](https://www.digitalocean.com/community/tutorials/how-to-set-up-time-synchronization-on-ubuntu-18-04) tutorial on setting up time syncing on Ubuntu.
+From [this tutorial on setting up time syncing on debian.](https://vitux.com/how-to-setup-ntp-server-and-client-on-debian-10/)
 
 > Though timesyncd is fine for most purposes, some applications that
 > are very sensitive to even the slightest perturbations in time may be
