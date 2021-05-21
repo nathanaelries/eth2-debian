@@ -104,6 +104,11 @@ $ sudo apt update
 $ sudo apt install ethereum
 ```
 
+Confirm that ethereum is installed:
+```
+$ dpkg -l | grep ethereum
+ii  ethereum     1.9.25+build24398+bionic     amd64   Meta-package to install geth and other tools
+```
 
 ### Create User Account
 
