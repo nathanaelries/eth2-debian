@@ -1,3 +1,8 @@
+### Most of this is directly forked from https://github.com/metanull-operator/eth2-ubuntu All credit goes to metanull and coincashew https://www.coincashew.com/coins/overview-eth/guide-or-security-best-practices-for-a-eth2-validator-beaconchain-node. 
+
+### I simply modified their documentation ever so slightly to assist users of debian servers.
+
+
 
 # Setup an Eth2 Mainnet Validator System on Debian
 
@@ -1497,14 +1502,6 @@ Then restart the services:
 sudo systemctl restart validator
 sudo systemctl restart beacon-chain
 ```
-
-## Future Updates
-
-There are at least one area where I may expand on my system configuration or instructions, but I have not pursued it yet.
-
- - SSH Key-Based Login
-   - This seems to be a good security move, but it also seems to be the perfect way to get me locked out of my own system. I have never set this up before, but may look into it.
-
 
 ## Sources/Inspiration
 Prysm: [https://docs.prylabs.network/docs/getting-started/](https://docs.prylabs.network/docs/getting-started/)
