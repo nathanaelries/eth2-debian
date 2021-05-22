@@ -1,6 +1,6 @@
-### Most of this is directly forked from https://github.com/metanull-operator/eth2-ubuntu 
+### All credit goes to metanull. Most of this is directly forked from https://github.com/metanull-operator/eth2-ubuntu 
 
-### All credit goes to metanull and coincashew https://www.coincashew.com/coins/overview-eth/guide-or-security-best-practices-for-a-eth2-validator-beaconchain-node. 
+### Security settings for SSH, firewall, disabling shared memory, and installing fail2ban credit to coincashew https://www.coincashew.com/coins/overview-eth/guide-or-security-best-practices-for-a-eth2-validator-beaconchain-node. 
 
 ### I simply modified their documentation ever so slightly to assist users of debian servers.
 
