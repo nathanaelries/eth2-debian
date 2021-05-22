@@ -750,6 +750,16 @@ If all goes well, you will see
 ```
 Verified /home/validator/bin/dist/validator-v1.3.9-linux-amd64 has been signed by Prysmatic Labs. Starting Prysm validator accounts import --keys-dir=/home/bosticetudis/eth2deposit-cli/validator_keys [2021-05-21 16:17:42] WARN flags: Running on ETH2 Mainnet [2021-05-21 16:17:42] INFO prompt: (wallet path) /home/validator/.eth2validators/prysm-wallet-v2 Wallet password: Enter the password for your imported accounts: Importing accounts, this may take a while... Importing accounts... 100% [==========================================] [4s:0s] Successfully imported
 ```
+### Make sure your validator is in queue!
+
+```console
+sudo journalctl -u validator -f
+```
+you should see something like:
+```
+May 21 07:12:51 <server-name> prysm.sh[28464]: time="2021-05-21 07:12:51" level=info msg="Deposit processed, entering activation queue after finalization" index=999999 positionInActivationQueue=3319 prefix=validator pubKey=0x000000000000 status=DEPOSITED
+```
+where `pubKey=0x000000000000` is your publick key and  `<server-name> is your server name` 
 
 ### Impurtant! Change the file permissions back!
 
@@ -1367,6 +1377,7 @@ sudo systemctl status beacon-chain validator geth prometheus grafana-server node
 ```
 ### Service Logs
 To watch the logs in real time:
+
 
 ```console
 sudo journalctl -u beacon-chain -f
