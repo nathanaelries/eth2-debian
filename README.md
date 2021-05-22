@@ -1,8 +1,8 @@
-### Most of this is directly forked from https://github.com/metanull-operator/eth2-ubuntu All credit goes to metanull and coincashew https://www.coincashew.com/coins/overview-eth/guide-or-security-best-practices-for-a-eth2-validator-beaconchain-node. 
+### Most of this is directly forked from https://github.com/metanull-operator/eth2-ubuntu 
+
+### All credit goes to metanull and coincashew https://www.coincashew.com/coins/overview-eth/guide-or-security-best-practices-for-a-eth2-validator-beaconchain-node. 
 
 ### I simply modified their documentation ever so slightly to assist users of debian servers.
-
-
 
 # Setup an Eth2 Mainnet Validator System on Debian
 
