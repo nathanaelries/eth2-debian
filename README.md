@@ -764,7 +764,7 @@ Create a password file and make it readbable only to the validator account.
 sudo -u validator touch /home/validator/.eth2validators/wallet-password.txt && sudo chmod 600 /home/validator/.eth2validators/wallet-password.txt
 ```
 
-Edit the file and put the password you entered into the `deposit` tool into the `wallet-password.txt` file.
+Edit the file and put the password you entered into the validator prysm script when you created the prysm wallet `/home/validator/.eth2validators/prysm-wallet-v2` put the password in the `wallet-password.txt` file.
 
 ```console
 sudo nano /home/validator/.eth2validators/wallet-password.txt
