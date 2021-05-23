@@ -1093,10 +1093,18 @@ sudo systemctl enable node_exporter.service
 Install go, if you haven't already.
 
 First, add the repository
-```console
-sudo add-apt-repository ppa:longsleep/golang-backports
-```
+You should be able to use any of the listed mirrors by adding a line to your /etc/apt/sources.list like this:
 
+deb http://ftp.de.debian.org/debian buster-backports main 
+
+```console
+sudo nano /etc/apt/sources.list
+```
+add this to the sources.list file
+```
+deb http://ftp.de.debian.org/debian buster-backports main 
+```
+update apt and install golang
 ```console
 sudo apt update
 sudo apt install -y golang-1.14-go
