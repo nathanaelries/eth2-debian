@@ -1092,7 +1092,13 @@ sudo systemctl enable node_exporter.service
 #### Install go
 Install go, if you haven't already.
 
+First, add the repository
 ```console
+sudo add-apt-repository ppa:longsleep/golang-backports
+```
+
+```console
+sudo apt update
 sudo apt install -y golang-1.14-go
 
 # Create a symlink from /usr/bin/go to the new go installation
