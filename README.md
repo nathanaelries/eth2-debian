@@ -1110,8 +1110,17 @@ sudo apt update
 sudo apt install -y golang-1.14-go
 
 # Create a symlink from /usr/bin/go to the new go installation
+sudo rm /usr/bin/go
 sudo ln -s /usr/lib/go-1.14/bin/go /usr/bin/go 
 ```
+
+make sure go is working properly
+
+```console
+go version
+```
+
+you should see `go version go1.14 linux/amd64`
 
 #### Create User Account
 ```console
