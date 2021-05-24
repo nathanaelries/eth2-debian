@@ -921,6 +921,10 @@ scrape_configs:
     scrape_interval: 5s
     static_configs:
     - targets: ['127.0.0.1:8081']
+  - job_name: 'slasher'
+    scrape_interval: 5s
+    static_configs:
+    - targets: ['127.0.0.1:8082']
   - job_name: 'ping_google'
     metrics_path: /probe
     params:
