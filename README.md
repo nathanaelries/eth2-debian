@@ -669,6 +669,7 @@ http-web3provider: "http://YYY.YYY.YYY.YYY:8545"
 monitoring-host: "0.0.0.0"
 p2p-tcp-port: 13000
 p2p-udp-port: 12000
+historical-slasher-node: true
 accept-terms-of-use: true
 ```
 
@@ -732,10 +733,27 @@ Restart         = on-failure
 WantedBy    = multi-user.target
 EOF
 ```
-
 # Update file permissions.
 ```console
 sudo chmod 600 /etc/systemd/system/slasher.service
+```
+
+# Create slasher config
+```console
+sudo -u slasher nano /home/slasher/prysm-slasher.yaml
+```
+
+The eth2 slasher service (part of systemd) `file: /home/slasher/prysm-slasher.yaml `
+
+```
+monitoring-host: "0.0.0.0"
+accept-terms-of-use: true
+beacon-rpc-provider: "127.0.0.1:4000"
+enable-historical-detection: true
+```
+ Update file permissions.
+```console
+sudo -u slasher chmod 600 /home/slasher/prysm-slasher.yaml
 ```
 
 # Enable auto-start at boot time and then start your slasher service.
