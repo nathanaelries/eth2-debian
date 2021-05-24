@@ -465,7 +465,7 @@ In case of power outage, you want your validator machine to restart as soon as p
 
 When pressing the up-arrow key, you can see prior commands which may contain sensitive data. To clear this, run the following:
 ```console
-shred -u ~/.bash_history && touch ~/.bash_history
+shred -u ~/.bash_history && touch ~/.bash_history && history -c
 ```
 
 
