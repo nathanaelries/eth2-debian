@@ -1453,6 +1453,7 @@ To see the status of system services:
 ```console
 sudo systemctl status beacon-chain
 sudo systemctl status validator
+sudo systemctl status slasher
 sudo systemctl status geth
 sudo systemctl status prometheus
 sudo systemctl status grafana-server
@@ -1463,7 +1464,7 @@ sudo systemctl status json_exporter
 
 Or, to see the status of all at once:
 ```console
-sudo systemctl status beacon-chain validator geth prometheus grafana-server node_exporter blackbox_exporter json_exporter
+sudo systemctl status beacon-chain validator slasher geth prometheus grafana-server node_exporter blackbox_exporter json_exporter
 ```
 ### Service Logs
 To watch the logs in real time:
@@ -1472,6 +1473,7 @@ To watch the logs in real time:
 ```console
 sudo journalctl -u beacon-chain -f
 sudo journalctl -u validator -f
+sudo journalctl -u slasher -f
 sudo journalctl -u geth -f
 sudo journalctl -u prometheus -f
 sudo journalctl -u grafana-server -f
@@ -1485,6 +1487,7 @@ To restart a service:
 ```console
 sudo systemctl restart beacon-chain
 sudo systemctl restart validator
+sudo systemctl restart slasher
 sudo systemctl restart geth
 sudo systemctl restart prometheus
 sudo systemctl restart grafana-server
@@ -1501,6 +1504,7 @@ To stop a service:
 ```console
 sudo systemctl stop beacon-chain
 sudo systemctl stop validator
+sudo systemctl stop slasher
 sudo systemctl stop geth
 sudo systemctl stop prometheus
 sudo systemctl stop grafana-server
@@ -1517,6 +1521,7 @@ To disable a service so that it no longer starts automatically after a reboot:
 ```console
 sudo systemctl disable beacon-chain
 sudo systemctl disable validator
+sudo systemctl disable slasher
 sudo systemctl disable geth
 sudo systemctl disable prometheus
 sudo systemctl disable grafana-server
@@ -1531,6 +1536,7 @@ To re-enable a service that has been disabled:
 ```console
 sudo systemctl enable beacon-chain
 sudo systemctl enable validator
+sudo systemctl enable slasher
 sudo systemctl enable geth
 sudo systemctl enable prometheus
 sudo systemctl enable grafana-server
@@ -1544,6 +1550,7 @@ Re-enabling a service will not necessarily start the service as well. To start a
 ```console
 sudo systemctl start beacon-chain
 sudo systemctl start validator
+sudo systemctl start slasher
 sudo systemctl start geth
 sudo systemctl start prometheus
 sudo systemctl start grafana-server
@@ -1558,6 +1565,7 @@ Upgrading the Prysm beacon chain and validator clients is as easy as restarting 
 ```console
 sudo systemctl restart beacon-chain
 sudo systemctl restart validator
+sudo systemctl restart slasher
 ```
 
 ### Changing systemd Service Files
@@ -1579,13 +1587,15 @@ To update the configuration options of the beacon chain or validator, edit the P
 ```console
 sudo nano /home/validator/prysm-validator.yaml
 sudo nano /home/beacon/prysm-beacon.yaml
+sudo nano /home/slasher/prysm-slasher.yaml
 ```
 
 Then restart the services:
 
 ```console
-sudo systemctl restart validator
 sudo systemctl restart beacon-chain
+sudo systemctl restart validator
+sudo systemctl restart slasher
 ```
 
 ## Sources/Inspiration
