@@ -14,6 +14,7 @@ Setup includes installation and configuration of the following services, includi
 
 - Prysm Beacon Chain
 - Prysm Validator
+- Prysm Slasher
 - geth 
 - Prometheus
 - Grafana
@@ -554,7 +555,7 @@ WantedBy=multi-user.target
 
 ### Start geth
 
-Start and enable the validator service.
+Start and enable the geth service.
 
 ```console
 sudo systemctl daemon-reload
@@ -670,7 +671,6 @@ monitoring-host: "0.0.0.0"
 p2p-tcp-port: 13000
 p2p-udp-port: 12000
 historical-slasher-node: true
-enable-external-slashing-protection: true
 accept-terms-of-use: true
 ```
 
@@ -699,6 +699,7 @@ monitoring-host: "0.0.0.0"
 graffiti: "YOUR_GRAFFITI_HERE"
 beacon-rpc-provider: "127.0.0.1:4000"
 wallet-password-file: "/home/validator/.eth2validators/wallet-password.txt"
+enable-external-slashing-protection: true
 accept-terms-of-use: true
 ```
 
@@ -710,7 +711,7 @@ Change permissions of the file.
 sudo -u validator chmod 600 /home/validator/prysm-validator.yaml
 ```
 
-### Setup the prysm slasher (optional)
+### Setup the prysm slasher 
 
 Create a new slasher unit file
 ```console
