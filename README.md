@@ -54,6 +54,22 @@ Run the following command to see the list of time zones, then copy the appropria
 timedatectl list-timezones
 ```
 
+# Turn off swap
+```console
+sudo sysctl vm.swappiness=0
+```
+
+make sure swapiness stays 0 after reboot
+```console
+sudo nano /etc/sysctl.conf
+```
+And add this line to  `/etc/sysctl.conf it`
+```
+vm.swappiness=0
+```
+
+save and close the file
+
 Run the following command, replacing `<SELECTED_TIMEZONE>` with the time zone you have copied onto your clipboard.
 ```console
 sudo timedatectl set-timezone <SELECTED_TIMEZONE>
