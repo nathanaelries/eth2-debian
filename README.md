@@ -711,8 +711,7 @@ sudo -u validator chmod 600 /home/validator/prysm-validator.yaml
 
 ### Setup the prysm slasher (optional)
 
-
-# Create a new slasher unit file
+Create a new slasher unit file
 ```console
 sudo nano /etc/systemd/system/slasher.service
 ```
@@ -721,24 +720,25 @@ The eth2 slasher service (part of systemd) `file: /etc/systemd/system/slasher.se
 ```
 [Unit]
 Description     = eth2 slasher service
-Wants           = network-online.target
-After           = network-online.target 
+Wants           = network.target
+After           = network.target 
 
 [Service]
-User            = $(whoami)
+User            = slasher
 ExecStart       = /home/slasher/bin/prysm.sh slasher --mainnet
-Restart         = on-failure
+Restart         = always
+RestartSec      = 5
 
 [Install]
 WantedBy    = multi-user.target
-EOF
+
 ```
-# Update file permissions.
+Update file permissions.
 ```console
 sudo chmod 600 /etc/systemd/system/slasher.service
 ```
 
-# Create slasher config
+Create slasher config
 ```console
 sudo -u slasher nano /home/slasher/prysm-slasher.yaml
 ```
@@ -756,7 +756,7 @@ enable-historical-detection: true
 sudo -u slasher chmod 600 /home/slasher/prysm-slasher.yaml
 ```
 
-# Enable auto-start at boot time and then start your slasher service.
+Enable auto-start at boot time and then start your slasher service.
 ```console
 sudo systemctl daemon-reload
 sudo systemctl enable slasher
