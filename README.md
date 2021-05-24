@@ -670,6 +670,7 @@ monitoring-host: "0.0.0.0"
 p2p-tcp-port: 13000
 p2p-udp-port: 12000
 historical-slasher-node: true
+enable-external-slashing-protection: true
 accept-terms-of-use: true
 ```
 
