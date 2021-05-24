@@ -580,8 +580,10 @@ exit
 ```console
 sudo adduser --home /home/beacon --disabled-password --gecos 'Ethereum 2 Beacon Chain' beacon
 sudo adduser --home /home/validator --disabled-password --gecos 'Ethereum 2 Validator' validator
+sudo adduser --home /home/slasher --disabled-password --gecos 'Ethereum 2 Slasher' slasher
 sudo -u beacon mkdir /home/beacon/bin
 sudo -u validator mkdir /home/validator/bin
+sudo -u validator mkdir /home/slasher/bin
 ```
 
 ### Install prysm.sh
@@ -702,6 +704,44 @@ Change permissions of the file.
 
 ```console
 sudo -u validator chmod 600 /home/validator/prysm-validator.yaml
+```
+
+### Setup the prysm slasher (optional)
+
+
+# Create a new slasher unit file
+```console
+sudo nano /etc/systemd/system/slasher.service
+```
+
+# The eth2 slasher service (part of systemd)
+# file: /etc/systemd/system/slasher.service 
+```
+[Unit]
+Description     = eth2 slasher service
+Wants           = network-online.target
+After           = network-online.target 
+
+[Service]
+User            = $(whoami)
+ExecStart       = /home/slasher/bin/prysm.sh slasher --mainnet
+Restart         = on-failure
+
+[Install]
+WantedBy    = multi-user.target
+EOF
+```
+
+# Update file permissions.
+```console
+sudo chmod 600 /etc/systemd/system/slasher.service
+```
+
+# Enable auto-start at boot time and then start your slasher service.
+```console
+sudo systemctl daemon-reload
+sudo systemctl enable slasher
+sudo systemctl start slasher
 ```
 
 ### Make Validator Deposits and Install Keys
