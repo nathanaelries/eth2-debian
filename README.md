@@ -725,7 +725,7 @@ After           = network.target
 
 [Service]
 User            = slasher
-ExecStart       = /home/slasher/bin/prysm.sh slasher --mainnet
+ExecStart       = /home/slasher/bin/prysm.sh slasher --config-file /home/slasher/prysm-slasher.yaml
 Restart         = always
 RestartSec      = 5
 
