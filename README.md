@@ -593,6 +593,8 @@ cd /home/validator/bin
 sudo -u validator curl https://raw.githubusercontent.com/prysmaticlabs/prysm/master/prysm.sh --output prysm.sh && sudo -u validator chmod +x prysm.sh
 cd /home/beacon/bin
 sudo -u beacon curl https://raw.githubusercontent.com/prysmaticlabs/prysm/master/prysm.sh --output prysm.sh && sudo -u beacon chmod +x prysm.sh
+cd /home/slasher/bin
+sudo -u slasher curl https://raw.githubusercontent.com/prysmaticlabs/prysm/master/prysm.sh --output prysm.sh && sudo -u slasher chmod +x prysm.sh
 ```
 
 ### Set Up systemd Service File
