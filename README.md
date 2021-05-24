@@ -716,8 +716,7 @@ sudo -u validator chmod 600 /home/validator/prysm-validator.yaml
 sudo nano /etc/systemd/system/slasher.service
 ```
 
-# The eth2 slasher service (part of systemd)
-# file: /etc/systemd/system/slasher.service 
+The eth2 slasher service (part of systemd) `file: /etc/systemd/system/slasher.service `
 ```
 [Unit]
 Description     = eth2 slasher service
